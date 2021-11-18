@@ -1,0 +1,224 @@
+.fade:not(.show) {
+  pointer-events: none;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.App {
+  text-align: center;
+
+  &.with-fixed-header {
+    padding-top: 54px;
+
+    .fixed-header {
+      top: 54px;
+      z-index: 100 !important;
+    }
+  }
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+.logo-salary-print {
+  //height: 25px;
+  width: 100px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+.print-all img {
+  width: 20px;
+}
+.form-check-input{
+  width: 30px;
+  height: 30px;
+}
+.salary-table{
+  height: 464px;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+.modal-dialog {
+  max-width: 280mm;
+}
+
+.modal-body {
+  max-height: calc(100vh - 105px);
+  overflow: auto;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.bill {
+  width: 270mm;
+  height: 50mm;
+  border: 1px solid;
+  position: relative;
+  font-size: 16px;
+  text-transform: uppercase;
+  display: flex;
+  flex-direction: row;
+  padding: 0 0 0 30px;
+  justify-content: center;
+}
+
+.left {
+  display: flex;
+  width: 80mm;
+  flex-direction: column;
+  padding-right: 40px;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid #000 !important;
+  margin-right: 30px;
+}
+
+.logo {
+  width: 50mm;
+}
+
+.phone-number {
+  font-size: 25px;
+  /*font-weight: bold;*/
+  text-align: center;
+  padding-top: 15px;
+}
+
+.center {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-right: 30px;
+  justify-content: center;
+}
+
+.right {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #000 !important;
+  width: 120px;
+}
+
+.bill * {
+  border: none;
+  background: transparent;
+  text-transform: capitalize;
+}
+
+.contact-name {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.contact-address {
+  font-size: 22px;
+  text-transform: CAPITALIZE;
+}
+
+.contact-number {
+  font-size: 32px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 600px) {
+  table{
+    font-size: 14px;
+  }
+}
+//
+table th, table td {
+  border: 1px solid #6c757d;
+  text-align: left;
+}
+
+//
+//table td button img{
+//  width: 20px;
+//  height: 20px;
+//}
+
+@media print {
+  html, body {
+    display: block;
+    margin: 0;
+    transform: translate(0);
+  }
+
+  body.modal-open {
+    overflow: auto;
+    min-width: 0 !important;
+  }
+  .non-printable {
+    display: none;
+  }
+  .printable {
+    display: block;
+  }
+
+
+  .modal-dialog {
+    margin: 0;
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 0;
+  }
+
+  .modal-body {
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .modal-footer, .modal-header {
+    display: none;
+  }
+
+  .bill {
+    margin-bottom: 0;
+    font-size: 14px;
+    background: none;
+  }
+  .modal {
+    position: relative;
+  }
+}
+
+@page {
+  margin: 10mm;
+}

@@ -1,0 +1,140 @@
+[
+  {
+    "where": {
+      "and": [
+        {
+          "date": {
+            "between": [
+              "${startDate.toUTCString()}",
+              "${endDate.toUTCString()}"
+            ]
+          }
+        },
+        {
+          "or": [
+            {
+              "status": "return"
+            },
+            {
+              "status": "dispatch"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "include": [
+      {
+        "relation": "operatorSteps",
+        "scope": {
+          "where": {
+            "completeTime": {
+              "gte": [
+                "${startDate.toUTCString()}"
+              ]
+            }
+          },
+          "order": [
+            "id desc"
+          ],
+          "fields": {
+            "id": "true",
+            "stepId": "true",
+            "operatorId": "true",
+            "completeTime": "true",
+            "quantity": "true"
+          },
+          "include": [
+            {
+              "relation": "step",
+              "scope": {
+                "fields": {
+                  "id": "true",
+                  "name": "true",
+                  "estimatedTime": "true",
+                  "designId": "true"
+                },
+                "include": [
+                  {
+                    "relation": "design",
+                    "scope": {
+                      "fields": {
+                        "id": "true",
+                        "name": "true"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "include": [
+      {
+        "relation": "operatorSteps",
+        "scope": {
+          "where": {
+            "completeTime": {
+              "gte": [
+                "${startDate.toUTCString()}"
+              ]
+            }
+          },
+          "order": [
+            "id desc"
+          ],
+          "fields": {
+            "id": "true",
+            "stepId": "true",
+            "operatorId": "true",
+            "completeTime": "true",
+            "quantity": "true"
+          },
+          "include": [
+            {
+              "relation": "step",
+              "scope": {
+                "fields": {
+                  "id": "true",
+                  "name": "true",
+                  "estimatedTime": "true",
+                  "designId": "true"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "where": {
+      "startTime": {
+        "gte": [
+          "${startDate.toUTCString()}"
+        ]
+      }
+    },
+    "order": [
+      "id desc"
+    ],
+    "include": [
+      {
+        "relation": "step",
+        "scope": {
+          "fields": {
+            "id": "true",
+            "name": "true",
+            "estimatedTime": "true",
+            "designId": "true"
+          }
+        }
+      }
+    ]
+  }
+]
