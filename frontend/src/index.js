@@ -48,10 +48,10 @@ const LoadingIndicator = () => {
 
 ReactDOM.render(
     <Provider store={store}>
-        <Router>
+        {/*<Router>*/}
             <App />
             <LoadingIndicator/>
-        </Router>
+        {/*</Router>*/}
     </Provider>,
     document.getElementById('root')
 );

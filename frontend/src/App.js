@@ -1,7 +1,7 @@
 import React, {Fragment} from 'react';
 
 // Set up all routes in App
-import {Link, Route} from 'react-router-dom';
+import {BrowserRouter, Link, Route, Routes} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.scss';
 import 'react-toastify/dist/ReactToastify.css';
@@ -133,23 +133,27 @@ export default class App extends React.Component {
                     }
                 </Navbar>
                 <Container fluid>
-                    <Route path="/sign-in" component={SignIn}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/" exact component={ViewOperator}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/add-operator" exact component={AddOperator}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/edit-operator" exact component={EditOperator}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/view-operator" exact component={ViewOperator}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/operator-operations" exact
-                                  component={OperatorOperations}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/add-design" exact component={AddDesign}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/edit-design" exact component={EditDesign}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/view-design" exact component={ViewDesign}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/add-operations" exact component={AddOperation}/>
-                    <PrivateRoute roles={['admin', 'manager']} path="/view-operations" exact component={ViewOperation}/>
-                    <PrivateRoute roles={['admin', 'cleo']} path="/print-cod" exact component={PrintCod}/>
-                    <PrivateRoute roles={['admin', 'cleo']} path="/add-cod" exact component={AddCod}/>
-                    <PrivateRoute roles={['admin', 'cleo']} path="/edit-cod" exact component={EditCod}/>
-                    <PrivateRoute roles={['admin']} path="/update-cod-payment-status" exact component={UpdateCodPaymentStatus}/>
-                    <PrivateRoute roles={['admin']} path="/view-cod" exact component={ViewCod}/>
+                    <BrowserRouter>
+                        <Routes>
+                            <Route path="/sign-in" component={SignIn}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/" exact component={ViewOperator}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/add-operator" exact component={AddOperator}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/edit-operator" exact component={EditOperator}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/view-operator" exact component={ViewOperator}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/operator-operations" exact
+                                          component={OperatorOperations}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/add-design" exact component={AddDesign}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/edit-design" exact component={EditDesign}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/view-design" exact component={ViewDesign}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/add-operations" exact component={AddOperation}/>
+                            <PrivateRoute roles={['admin', 'manager']} path="/view-operations" exact component={ViewOperation}/>
+                            <PrivateRoute roles={['admin', 'cleo']} path="/print-cod" exact component={PrintCod}/>
+                            <PrivateRoute roles={['admin', 'cleo']} path="/add-cod" exact component={AddCod}/>
+                            <PrivateRoute roles={['admin', 'cleo']} path="/edit-cod" exact component={EditCod}/>
+                            <PrivateRoute roles={['admin']} path="/update-cod-payment-status" exact component={UpdateCodPaymentStatus}/>
+                            <PrivateRoute roles={['admin']} path="/view-cod" exact component={ViewCod}/>
+                        </Routes>
+                    </BrowserRouter>
                 </Container>
             </div>
         );
