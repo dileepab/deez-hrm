@@ -681,13 +681,13 @@ export default class ViewOperator extends React.Component {
                             {this.state.selectedOperator.operatorSteps && Object.keys(this.state.selectedOperator.operatorSteps).map((key) => {
                                 return (
                                     <Card key={key}>
-                                        <Accordion.Toggle className={'pl-1'} as={Card.Header} eventKey={key}>
+                                        <Accordion.Header className={'pl-1'} as={Card.Header} eventKey={key}>
                                             <h6 className={'d-flex justify-content-between m-0'}>
                                                 <span>{key}</span>
                                                 <span>{this.calculateDaily(this.state.selectedOperator.operatorSteps[key])}</span>
                                             </h6>
-                                        </Accordion.Toggle>
-                                        <Accordion.Collapse eventKey={key} className={''}>
+                                        </Accordion.Header>
+                                        <Accordion.Body eventKey={key} className={''}>
 
                                             <Table striped bordered hover size="sm"
                                                    className={'m-0 border-right-0 border-left-0 border-bottom-0'}>
@@ -746,7 +746,7 @@ export default class ViewOperator extends React.Component {
                                                 })}
                                                 </tbody>
                                             </Table>
-                                        </Accordion.Collapse>
+                                        </Accordion.Body>
                                     </Card>
                                 )
                             })}
