@@ -44,7 +44,7 @@ export class DeezServerApplication extends BootMixin(
       },
     };
 
-    this.basePath('/api');
+    // this.basePath('/api');
 
     // ------ ADD SNIPPET AT THE BOTTOM ---------
     // Mount authentication system
