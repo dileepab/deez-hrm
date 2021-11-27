@@ -41,7 +41,7 @@ function loadUserData(token) {
         },
     };
 
-    return fetch(`${apiUrl}/users/me`, requestOptions)
+    return fetch(`${apiUrl}/whoAmI`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
