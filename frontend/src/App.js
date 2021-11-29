@@ -65,11 +65,9 @@ export default class App extends React.Component {
             <Navbar.Collapse id='basic-navbar-nav'>
               <Nav className='me-auto'>
                 <NavDropdown title='Operators' id='basic-nav-dropdown'>
-                  <Nav.Link as={Link} to='/add-operator'>
-                    <NavDropdown.Item eventKey='11'>
-                      Add Operators
-                    </NavDropdown.Item>
-                  </Nav.Link>
+                  <NavDropdown.Item eventKey='11' as={Link} to='/add-operator'>
+                    Add Operators
+                  </NavDropdown.Item>
                   <NavDropdown.Item eventKey='12' as={Link} to='/edit-operator'>
                     Edit Operators
                   </NavDropdown.Item>
@@ -99,7 +97,7 @@ export default class App extends React.Component {
               </Nav>
               <Nav>
                 <h6
-                  className='text-center text-white mb-0 d-lg-flex align-items-center d-none'> {`Hello, ${this.state.currentUser.firstName}`} </h6>
+                  className='text-center text-white mb-0 d-lg-flex align-items-center d-none'> {`Hello, ${this.state.currentUser.userName}`} </h6>
                 <Nav.Link onClick={this.onLogOut}>Log out</Nav.Link>
               </Nav>
             </Navbar.Collapse>

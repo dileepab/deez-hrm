@@ -3,7 +3,7 @@ import {Button, ButtonGroup, Col, Container, Form, Modal, Row, Table} from "reac
 import {faCopy, faEdit, faInfo, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import EditDesign from "./EditDesign";
-import lodash from "lodash";
+import _ from "lodash";
 import {authenticationService, designService, operationService} from "../../../services";
 import {toast} from "react-toastify";
 import {trackPromise} from "react-promise-tracker";
@@ -114,7 +114,7 @@ export default class ViewDesign extends React.Component {
     }
 
     duplicateDesign = (design) => {
-        let selectedDesign = lodash.cloneDeep(design);
+        let selectedDesign = _.cloneDeep(design);
         delete selectedDesign.id;
         selectedDesign.steps && selectedDesign.steps.forEach(function (step) {
             delete step.id;
@@ -328,18 +328,18 @@ export default class ViewDesign extends React.Component {
         let type = this.state.filter.type;
         let keyword = this.state.filter.keyword.toLowerCase();
         let filteredData = this.state.designs;
-        filteredData = lodash.filter(filteredData, function (design){
+        filteredData = _.filter(filteredData, function (design){
             if(design.name.toLowerCase().includes(keyword) || design.description.toLowerCase().includes(keyword)){
                 return design;
             }
         });
         if(brand !== '') {
-            filteredData = lodash.filter(filteredData, function (design) {
+            filteredData = _.filter(filteredData, function (design) {
                 return design != null && design.brand === brand;
             });
         }
         if(type !== '') {
-            filteredData = lodash.filter(filteredData, function (design) {
+            filteredData = _.filter(filteredData, function (design) {
                 return design != null && design.type === parseInt(type);
             });
         }
