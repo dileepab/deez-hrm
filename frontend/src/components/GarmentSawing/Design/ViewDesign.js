@@ -66,10 +66,9 @@ export default class ViewDesign extends React.Component {
             ));
     }
 
-    editDesign = (id, ind) => {
-        let selectedDesign = this.state.designs[ind];
+    editDesign = (design) => {
         this.setState({
-            selectedDesign: selectedDesign,
+            selectedDesign: design,
             modal: {
                 ...this.state.modal,
                 showEditModal: true,
@@ -79,14 +78,13 @@ export default class ViewDesign extends React.Component {
         })
     }
 
-    removeDesign = (id, ind) => {
-        let selectedDesign = this.state.designs[ind];
+    removeDesign = (design) => {
         this.setState({
-            selectedDesign: selectedDesign,
+            selectedDesign: design,
             modal: {
                 ...this.state.modal,
                 showConfirmation: true,
-                title: `Remove Design ${selectedDesign.name}`,
+                title: `Remove Design ${design.name}`,
                 body: 'Are you sure ?'
             }
         })
@@ -190,14 +188,13 @@ export default class ViewDesign extends React.Component {
                 ));
     }
 
-    viewDesignInfo = async (design, ind) => {
-        let selectedDesign = this.state.designs[ind];
+    viewDesignInfo = async (design) => {
         await this.setState({
-            selectedDesign: selectedDesign,
+            selectedDesign: design,
             modal: {
                 ...this.state.modal,
                 showInfoModal: true,
-                title: `${selectedDesign.name} Details`,
+                title: `${design.name} Details`,
                 body: ''
             }
         })
@@ -442,12 +439,12 @@ export default class ViewDesign extends React.Component {
                                     <td>
                                         <div className={"d-flex align-items-center justify-content-center"}>
                                             <Button className={"mr-1"} variant={"outline-primary"}
-                                                    onClick={() => this.viewDesignInfo(design, ind)}
+                                                    onClick={() => this.viewDesignInfo(design)}
                                                     size={"sm"}>
                                                 <FontAwesomeIcon title={"Details"} icon={faInfo}/>
                                             </Button>
                                             <Button className={"mr-1"} variant={"outline-primary"}
-                                                    onClick={() => this.editDesign(design.id, ind)}
+                                                    onClick={() => this.editDesign(design)}
                                                     size={"sm"}>
                                                 <FontAwesomeIcon title={"Edit"} icon={faEdit}/>
                                             </Button>
@@ -457,7 +454,7 @@ export default class ViewDesign extends React.Component {
                                                 <FontAwesomeIcon title={"Duplicate"} icon={faCopy}/>
                                             </Button>
                                             {this.state.currentUser && this.state.currentUser.roles.includes('admin') && !design.steps &&
-                                            <Button variant={"danger"} onClick={() => this.removeDesign(design.id, ind)}
+                                            <Button variant={"danger"} onClick={() => this.removeDesign(design)}
                                                     size={"sm"}>
                                                 <FontAwesomeIcon title={"Delete"} icon={faTrash}/>
                                             </Button>
