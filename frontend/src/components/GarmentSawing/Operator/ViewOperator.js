@@ -21,7 +21,11 @@ export default class ViewOperator extends React.Component {
             days: [],
             selectedOperator: {},
             thisMonthCompletedCount: 0,
+            thisMonthCLCompletedCount: 0,
+            thisMonthNLMCompletedCount: 0,
             lastMonthCompletedCount: 0,
+            lastMonthCLCompletedCount: 0,
+            lastMonthNLMCompletedCount: 0,
             modal: {
                 showInfoModal: false,
                 showSalaryModal: false,
@@ -55,28 +59,60 @@ export default class ViewOperator extends React.Component {
         let thisMonthStartDate = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
         let lastMonthStartDate = new Date(date.getFullYear(), date.getMonth() - 1, 1, 0, 0, 0);
         let thisMonthCompletedCount = 0
+        let thisMonthCLCompletedCount = 0
+        let thisMonthNLMCompletedCount = 0
         let lastMonthCompletedCount = 0
+        let lastMonthCLCompletedCount = 0
+        let lastMonthNLMCompletedCount = 0
         data.map((selectedDesign, i) => {
             let operationTimes = 0;
+            let operationTimesCL = 0;
+            let operationTimesNLM = 0;
             let thisMonthCompletedTime = 0;
+            let thisMonthCLCompletedTime = 0;
+            let thisMonthNLMCompletedTime = 0;
             let lastMonthCompletedTime = 0;
+            let lastMonthCLCompletedTime = 0;
+            let lastMonthNLMCompletedTime = 0;
             selectedDesign.steps && selectedDesign.steps.map((operation, ind) => {
                 operationTimes += operation.estimatedTime;
+                if(selectedDesign.brand === 'cleopatra') {
+                    operationTimesCL += operation.estimatedTime
+                }
+                if(selectedDesign.brand === 'nolimit') {
+                    operationTimesNLM += operation.estimatedTime
+                }
                 if (selectedDesign.type === 2) {
                     return false;
                 }
                 operation.operatorSteps && operation.operatorSteps.map((operatorStep, ind) => {
                     if (new Date(operatorStep.completeTime) > new Date(thisMonthStartDate)) {
                         thisMonthCompletedTime += operation.estimatedTime * operatorStep.quantity
+                        if(selectedDesign.brand === 'cleopatra') {
+                            thisMonthCLCompletedTime += operation.estimatedTime * operatorStep.quantity
+                        }
+                        if(selectedDesign.brand === 'nolimit') {
+                            thisMonthNLMCompletedTime += operation.estimatedTime * operatorStep.quantity
+                        }
                     } else if (new Date(operatorStep.completeTime) > new Date(lastMonthStartDate)) {
                         lastMonthCompletedTime += operation.estimatedTime * operatorStep.quantity
+                        if(selectedDesign.brand === 'cleopatra') {
+                            lastMonthCLCompletedTime += operation.estimatedTime * operatorStep.quantity
+                        }
+                        if(selectedDesign.brand === 'nolimit') {
+                            lastMonthNLMCompletedTime += operation.estimatedTime * operatorStep.quantity
+                        }
                     }
                     return operatorStep;
                 });
                 return operationTimes;
             });
             thisMonthCompletedCount += thisMonthCompletedTime / operationTimes || 0;
+            thisMonthCLCompletedCount += thisMonthCLCompletedTime / operationTimesCL || 0;
+            thisMonthNLMCompletedCount += thisMonthNLMCompletedTime / operationTimesNLM || 0;
             lastMonthCompletedCount += lastMonthCompletedTime / operationTimes || 0;
+            lastMonthCLCompletedCount += lastMonthCLCompletedTime / operationTimesCL || 0;
+            lastMonthNLMCompletedCount += lastMonthNLMCompletedTime / operationTimesNLM || 0;
             selectedDesign.totalTime = operationTimes;
             selectedDesign.sewingValueForSecond = (selectedDesign.sewingValue ? selectedDesign.sewingValue : 0) / operationTimes;
             return selectedDesign;
@@ -84,7 +120,11 @@ export default class ViewOperator extends React.Component {
         console.log(thisMonthCompletedCount, lastMonthCompletedCount);
         this.setState({
             thisMonthCompletedCount: parseInt(thisMonthCompletedCount),
+            thisMonthCLCompletedCount: parseInt(thisMonthCLCompletedCount),
+            thisMonthNLMCompletedCount: parseInt(thisMonthNLMCompletedCount),
             lastMonthCompletedCount: parseInt(lastMonthCompletedCount),
+            lastMonthCLCompletedCount: parseInt(lastMonthCLCompletedCount),
+            lastMonthNLMCompletedCount: parseInt(lastMonthNLMCompletedCount),
         })
         return data;
     }
@@ -111,16 +151,22 @@ export default class ViewOperator extends React.Component {
                             operator.yesterdaySalary = yesterdayTimeAndSalary.totalSalary;
                             operator.yesterdayTime = yesterdayTimeAndSalary.totalTime;
                             operator.yesterdayCompleteCount = yesterdayTimeAndSalary.totalCompleteCount;
+                            operator.yesterdayCLCompleteCount = yesterdayTimeAndSalary.totalCLCompleteCount;
+                            operator.yesterdayNLMCompleteCount = yesterdayTimeAndSalary.totalNLMCompleteCount;
 
                             let thisMonthTimeAndSalary = this.calculateSalary(operator, thisMonthStartDate, tomorrow);
                             operator.thisMonthTime = thisMonthTimeAndSalary.totalTime;
                             operator.thisMonthSalary = thisMonthTimeAndSalary.totalSalary;
                             operator.thisMonthCompleteCount = thisMonthTimeAndSalary.totalCompleteCount;
+                            operator.thisMonthCLCompleteCount = thisMonthTimeAndSalary.totalCLCompleteCount;
+                            operator.thisMonthNLMCompleteCount = thisMonthTimeAndSalary.totalNLMCompleteCount;
 
                             let lastMonthTimeAndSalary = this.calculateSalary(operator, lastMonthStartDate, thisMonthStartDate);
                             operator.lastMonthTime = lastMonthTimeAndSalary.totalTime;
                             operator.lastMonthSalary = lastMonthTimeAndSalary.totalSalary;
                             operator.lastMonthCompleteCount = lastMonthTimeAndSalary.totalCompleteCount;
+                            operator.lastMonthCLCompleteCount = lastMonthTimeAndSalary.totalCLCompleteCount;
+                            operator.lastMonthNLMCompleteCount = lastMonthTimeAndSalary.totalNLMCompleteCount;
                             return operator;
                         })
                         const percentage = this.calculatePercentage(data);
@@ -231,6 +277,8 @@ export default class ViewOperator extends React.Component {
     calculateSalary(operator, start, end) {
         let totalTime = 0;
         let totalCompleteCount = 0;
+        let totalCLCompleteCount = 0;
+        let totalNLMCompleteCount = 0;
         let totalSalary = 0;
         operator.operatorSteps && operator.operatorSteps.map((operatorStep, ind) => {
             if (new Date(start) > new Date(operatorStep.completeTime) || new Date(operatorStep.completeTime) > new Date(end)) {
@@ -242,10 +290,16 @@ export default class ViewOperator extends React.Component {
             }
             totalTime += operatorStep.step.estimatedTime * operatorStep.quantity;
             totalCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
+            if(design.brand === 'cleopatra') {
+                totalCLCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
+            }
+            if(design.brand === 'nolimit') {
+                totalNLMCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
+            }
             totalSalary += operatorStep.step.estimatedTime * operatorStep.quantity * design.sewingValueForSecond;
             return operatorStep;
         })
-        return {totalTime, totalSalary, totalCompleteCount};
+        return {totalTime, totalSalary, totalCompleteCount, totalCLCompleteCount, totalNLMCompleteCount};
     }
 
     calculateDaily(operatorSteps) {
@@ -382,35 +436,60 @@ export default class ViewOperator extends React.Component {
                             <Button variant={this.state.operatorType === 'helper' ? 'primary' : 'outline-primary'}
                                     onClick={() => this.setState({operatorType: 'helper'})}>Helper</Button>
                         </ButtonGroup>
+
+                        {this.state.operatorType === 'operator' &&
+                            <h2 className={'mt-2'}>View Operators</h2>
+                        }
+                        {this.state.operatorType === 'helper' &&
+                            <h2 className={'mt-2'}>View Helpers</h2>
+                        }
                     </div>
                     <div>
-                        <div>This Month Completed Count: {this.state.thisMonthCompletedCount}</div>
-                        <div>Last Month Completed Count: {this.state.lastMonthCompletedCount}</div>
+                        <div className={'flex-column'}>
+                            <div className={'d-flex flex-row'}>
+                                <div>
+                                    <div className={'justify-content-end'}>This Month Completed Count </div>
+                                    <div className={'justify-content-end'}>Cleopatra </div>
+                                    <div className={'justify-content-end'}>Nolimit </div>
+                                </div>
+                                <div>
+                                    <div className={'justify-content-start'}> : {this.state.thisMonthCompletedCount}</div>
+                                    <div className={'justify-content-start'}> : {this.state.thisMonthCLCompletedCount}</div>
+                                    <div className={'justify-content-start'}> : {this.state.thisMonthNLMCompletedCount}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div>
+                        <div className={'flex-column'}>
+                            <div className={'d-flex flex-row'}>
+                                <div>
+                                    <div className={'justify-content-end'}>Last Month Completed Count</div>
+                                    <div className={'justify-content-end'}>Cleopatra </div>
+                                    <div className={'justify-content-end'}>Nolimit </div>
+                                </div>
+                                <div>
+                                    <div className={'justify-content-start'}> : {this.state.lastMonthCompletedCount}</div>
+                                    <div className={'justify-content-start'}> : {this.state.lastMonthCLCompletedCount}</div>
+                                    <div className={'justify-content-start'}> : {this.state.lastMonthNLMCompletedCount}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={'d-flex flex-column'}>
                         <Button variant={'primary'} onClick={this.viewSalarySheetModal}><FontAwesomeIcon
                             icon={faPrint}/> Print Salary Sheet</Button>
+
+                        {this.state.operatorType === 'operator' &&
+                            <ButtonGroup className={'mt-3'} size="sm">
+                                <Button variant={this.state.view === 'monthly' ? 'primary' : 'outline-primary'}
+                                        onClick={() => this.setState({view: 'monthly'})}>Monthly</Button>
+                                <Button variant={this.state.view === 'daily' ? 'primary' : 'outline-primary'}
+                                        onClick={() => this.setState({view: 'daily'})}>Daily</Button>
+                            </ButtonGroup>
+                        }
                     </div>
                 </div>
-                {this.state.operatorType === 'operator' &&
-                <div className="d-flex flex-row justify-content-between mt-2 mb-2">
-                    <div className="custom-file w-25 text-left">
-                        <h2>View Operators</h2>
-                    </div>
-                    <div>
-                        <ButtonGroup size="sm">
-                            <Button variant={this.state.view === 'monthly' ? 'primary' : 'outline-primary'}
-                                    onClick={() => this.setState({view: 'monthly'})}>Monthly</Button>
-                            <Button variant={this.state.view === 'daily' ? 'primary' : 'outline-primary'}
-                                    onClick={() => this.setState({view: 'daily'})}>Daily</Button>
-                        </ButtonGroup>
-                    </div>
-                </div>
-                }
-                {this.state.operatorType === 'helper' &&
-                <h2>View Helpers</h2>
-                }
-                <br/>
                 {this.state.operatorType === 'operator' &&
                 <div>
                     <Row>
