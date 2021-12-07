@@ -7,6 +7,7 @@ import _ from "lodash";
 import {authenticationService, designService, operationService} from "../../../services";
 import {toast} from "react-toastify";
 import {trackPromise} from "react-promise-tracker";
+import Moment from 'react-moment';
 
 
 export default class ViewDesign extends React.Component {
@@ -14,6 +15,7 @@ export default class ViewDesign extends React.Component {
         super(props);
         this.state = {
             designs: [],
+            selectedOperation: [],
             filteredDesign: [],
             filter: {
                 keyword: '',
@@ -25,6 +27,7 @@ export default class ViewDesign extends React.Component {
             modal: {
                 showConfirmation: false,
                 showInfoModal: false,
+                showOperationInfoModal: false,
                 showEditModal: false,
                 showDuplicateModal: false,
                 title: '',
@@ -180,7 +183,7 @@ export default class ViewDesign extends React.Component {
                         });
 
                         this.notifySuccess(`Design "${selectedDesign.name}" duplicated successfully`)
-                        this.fetchDesigns();
+                        this.fetchDesigns('incomplete');
                     },
                     error => {
                         this.notifyError(error);
@@ -277,6 +280,7 @@ export default class ViewDesign extends React.Component {
                 showConfirmation: false,
                 showEditModal: false,
                 showInfoModal: false,
+                showOperationInfoModal: false,
                 showDuplicateModal: false,
             }
         });
@@ -342,6 +346,19 @@ export default class ViewDesign extends React.Component {
         }
         this.setState({
             filteredDesign: filteredData
+        })
+    }
+
+
+    viewOperationInfo = (design, operation) => {
+
+        this.setState({
+            selectedOperation: operation,
+            modal: {
+                ...this.state.modal,
+                showOperationInfoModal: true,
+                title: `${design.name} - ${operation.name} Details`,
+            }
         })
     }
 
@@ -546,6 +563,7 @@ export default class ViewDesign extends React.Component {
                             <tr>
                                 <th>Name</th>
                                 <th width={150}>Completed Count</th>
+                                <th/>
                             </tr>
                             </thead>
                             <tbody>
@@ -554,6 +572,13 @@ export default class ViewDesign extends React.Component {
                                     <tr key={ind}>
                                         <td>{step.name}</td>
                                         <td className={'text-right'}>{this.operationCompletedCount(step.operatorSteps)}</td>
+                                        <td className={'text-center'}>
+                                            <Button variant={"outline-primary"}
+                                                    onClick={() => this.viewOperationInfo(this.state.selectedDesign, step)}
+                                                    size={"sm"}>
+                                                <FontAwesomeIcon icon={faInfo}/>
+                                            </Button>
+                                        </td>
                                     </tr>
                                 )
                             })}
@@ -608,6 +633,73 @@ export default class ViewDesign extends React.Component {
                         </Button>
                         <Button disabled={this.state.isLoading} variant="secondary" onClick={this.handleClose}>
                             Cancel
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                <Modal scrollable show={this.state.modal.showOperationInfoModal} onHide={() => {
+                    this.setState({
+                        modal: {
+                            ...this.state.modal,
+                            showOperationInfoModal: false,
+                        }
+                    });
+                }} centered>
+
+                    <Modal.Header closeButton>
+                        <Modal.Title>{this.state.modal.title}</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Table striped bordered hover size="sm">
+                            <tbody>
+                            <tr>
+                                <td>Name</td>
+                                <td>{this.state.selectedOperation.name}</td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td>{this.state.selectedOperation.description}</td>
+                            </tr>
+                            <tr>
+                                <td>Estimated Time (S)</td>
+                                <td>{this.state.selectedOperation.estimatedTime}</td>
+                            </tr>
+                            </tbody>
+                        </Table>
+                        <br/>
+                        <h6>Operations</h6>
+                        <Table striped bordered hover size="sm">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th width={150}>Completed Count</th>
+                                <th width={150}>Completed On</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+
+                            {this.state.selectedOperation.operatorSteps && this.state.selectedOperation.operatorSteps.map((operatorStep, ind) => {
+                                return (
+                                  <tr key={ind}>
+                                      <td>{operatorStep.operator && operatorStep.operator.name}</td>
+                                      <td>{operatorStep.quantity}</td>
+                                      <td><Moment format={'YYYY-MMM-DD'}>{operatorStep.completeTime}</Moment></td>
+                                  </tr>
+                                )
+                            })}
+                            </tbody>
+                        </Table>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button disabled={this.state.isLoading} variant="secondary" onClick={() => {
+                            this.setState({
+                                modal: {
+                                    ...this.state.modal,
+                                    showOperationInfoModal: false,
+                                }
+                            });
+                        }}>
+                            Ok
                         </Button>
                     </Modal.Footer>
                 </Modal>

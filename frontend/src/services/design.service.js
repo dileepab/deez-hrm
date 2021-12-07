@@ -5,6 +5,7 @@ export const designService = {
     getAllDesigns,
     getLastTwoMonthsAllDesigns,
     getAllDesignsWithOperator,
+    getAllIncompleteDesignsWithOperator,
     getIncompleteDesignsWithOperations,
     addDesign,
     deleteDesign,
@@ -13,7 +14,7 @@ export const designService = {
 
 function getAllDesigns(type) {
     const requestOptions = { method: 'GET', headers: authHeader() };
-    return fetch(`${apiUrl}/designs?filter={${type === 'incomplete'? '"where":{"isComplete": false},' : type === 'complete'? '"where":{"isComplete": true},' : '' }"order": ["id desc"],"include": [{"relation": "steps", "scope":{"include": [{"relation": "operatorSteps", "order": ["id desc"]}]}}]}`, requestOptions).then(handleResponse);
+    return fetch(`${apiUrl}/designs?filter={${type === 'incomplete'? '"where":{"isComplete": false},' : type === 'complete'? '"where":{"isComplete": true},' : '' }"order": ["id desc"],"include": [{"relation": "steps", "scope":{"include": [{"relation": "operatorSteps", "order": ["id desc"], "scope":{"include": [{"relation": "operator"}]}}]}}]}`, requestOptions).then(handleResponse);
 }
 
 function getLastTwoMonthsAllDesigns() {
@@ -43,6 +44,11 @@ function getLastTwoMonthsAllDesigns() {
 function getAllDesignsWithOperator() {
     const requestOptions = { method: 'GET', headers: authHeader() };
     return fetch(`${apiUrl}/designs?filter={"order": ["id desc"],"include": [{"relation": "steps", "scope":{"include": [{"relation": "operatorSteps", "scope":{"include": [{"relation": "operator"}]}}]}}]}`, requestOptions).then(handleResponse);
+}
+
+function getAllIncompleteDesignsWithOperator() {
+    const requestOptions = { method: 'GET', headers: authHeader() };
+    return fetch(`${apiUrl}/designs?filter={"where":{"isComplete": false},"order": ["id desc"],"include": [{"relation": "steps", "scope":{"include": [{"relation": "operatorSteps", "scope":{"include": [{"relation": "operator"}]}}]}}]}`, requestOptions).then(handleResponse);
 }
 
 function getIncompleteDesignsWithOperations() {

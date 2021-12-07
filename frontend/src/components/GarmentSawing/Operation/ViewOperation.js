@@ -23,7 +23,7 @@ export default class ViewOperation extends React.Component {
 
     componentDidMount() {
         trackPromise(
-        designService.getAllDesignsWithOperator().then(
+        designService.getAllIncompleteDesignsWithOperator().then(
             data => {
                 this.setState({
                     designs: data
