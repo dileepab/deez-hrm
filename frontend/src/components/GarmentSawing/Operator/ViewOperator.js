@@ -1,5 +1,5 @@
 import React from "react";
-import {Accordion, Button, ButtonGroup, Card, Container, Modal, Row, Table} from "react-bootstrap";
+import {Accordion, Button, ButtonGroup, Container, Modal, Row, Table} from "react-bootstrap";
 import Moment from "react-moment";
 import moment from "moment";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -759,17 +759,17 @@ export default class ViewOperator extends React.Component {
                         <Accordion defaultActiveKey="0" className={'w-100'}>
                             {this.state.selectedOperator.operatorSteps && Object.keys(this.state.selectedOperator.operatorSteps).map((key) => {
                                 return (
-                                    <Card key={key}>
-                                        <Accordion.Header className={'pl-1'} as={Card.Header} eventKey={key}>
+                                    <Accordion.Item key={key} eventKey={key}>
+                                        <Accordion.Header className={'pl-1'}>
                                             <h6 className={'d-flex justify-content-between m-0'}>
                                                 <span>{key}</span>
                                                 <span>{this.calculateDaily(this.state.selectedOperator.operatorSteps[key])}</span>
                                             </h6>
                                         </Accordion.Header>
-                                        <Accordion.Body eventKey={key} className={''}>
+                                        <Accordion.Body className={'p-0'}>
 
                                             <Table striped bordered hover size="sm"
-                                                   className={'m-0 border-right-0 border-left-0 border-bottom-0'}>
+                                                   className={'m-0'}>
                                                 <tbody>
                                                 {this.state.selectedOperator.operatorSteps[key].map((operatorStep, ind) => {
                                                     let design = lodash.find(this.state.designs, {'id': operatorStep.step.designId});
@@ -826,7 +826,7 @@ export default class ViewOperator extends React.Component {
                                                 </tbody>
                                             </Table>
                                         </Accordion.Body>
-                                    </Card>
+                                    </Accordion.Item>
                                 )
                             })}
                         </Accordion>
