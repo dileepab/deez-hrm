@@ -172,7 +172,7 @@ export default class OperatorOperations extends React.Component {
                             <Form.Control as="select" onChange={this.handleDesignChange}>
                                 <option></option>
                                 {this.state.designs.length > 0 && this.state.designs.map((design, index) => (
-                                    <option value={index} key={index}>{design.name}</option>
+                                    <option value={index} key={index}>{design.name} ----- {design.description}</option>
                                 ))}
                             </Form.Control>
                         </Form.Group>

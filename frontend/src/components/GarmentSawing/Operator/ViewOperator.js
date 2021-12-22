@@ -776,7 +776,7 @@ export default class ViewOperator extends React.Component {
                                                     let isLast = this.state.selectedOperator.operatorSteps[key].length - 1 === ind;
                                                     return (
                                                         <tr key={ind}>
-                                                            <td className={`border-left-0 ${isLast ? 'border-bottom-0' : ''}`}>{design.name}-{design.description}-{operatorStep.step.name}</td>
+                                                            <td className={`ps-4 border-left-0 ${isLast ? 'border-bottom-0' : ''}`}>{design.name}-{design.description}-{operatorStep.step.name}</td>
                                                             <td className={isLast ? 'border-bottom-0' : ''}>
                                                                 {!operatorStep.editable &&
                                                                 <span>{operatorStep.quantity}</span>}
