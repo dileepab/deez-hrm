@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Container, Form, Row} from "react-bootstrap";
+import {Button, Container, Form} from "react-bootstrap";
 import lodash from "lodash"
 import {operatorService} from "../../../services";
 import {toast} from "react-toastify";
@@ -141,7 +141,7 @@ export default class OperatorOperations extends React.Component {
     render() {
         return (
 
-            <Row>
+            <div>
                 <Container>
                     <div
                         aria-live="polite"
@@ -210,7 +210,7 @@ export default class OperatorOperations extends React.Component {
                         }
                     </Form>
                 </Container>
-            </Row>
+            </div>
         )
     }
 }
