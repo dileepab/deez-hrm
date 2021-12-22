@@ -155,7 +155,7 @@ export default class OperatorOperations extends React.Component {
                     <h2>Operator Operations</h2>
                     <br/>
                     <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
-                        <Form.Group controlId="operators">
+                        <Form.Group className={'mt-3'} controlId="operators">
                             <Form.Label>Select Operator</Form.Label>
                             <Form.Control as="select" onChange={(event) => {
                                 this.setState({selectedOperator: this.state.operators[event.target.value]})
@@ -167,7 +167,7 @@ export default class OperatorOperations extends React.Component {
                             </Form.Control>
                         </Form.Group>
                         {this.state.selectedOperator &&
-                        <Form.Group controlId="designs">
+                        <Form.Group className={'mt-3'} controlId="designs">
                             <Form.Label>Select Design</Form.Label>
                             <Form.Control as="select" onChange={this.handleDesignChange}>
                                 <option></option>
@@ -178,7 +178,7 @@ export default class OperatorOperations extends React.Component {
                         </Form.Group>
                         }
                         {this.state.selectedDesign &&
-                        <Form.Group controlId="operations">
+                        <Form.Group className={'mt-3'} controlId="operations">
                             <Form.Label>Select Operation</Form.Label>
                             <Form.Control as="select" onChange={(event) => {
                                 console.log(event.target.value);
@@ -193,7 +193,7 @@ export default class OperatorOperations extends React.Component {
                         }
 
                         {this.state.selectedOperation &&
-                        <Form.Group id="quantity">
+                        <Form.Group className={'mt-3'} id="quantity">
                             <Form.Label >
                                 Quantity
                             </Form.Label>
@@ -203,7 +203,7 @@ export default class OperatorOperations extends React.Component {
                         }
 
                         {this.state.selectedOperation && this.state.form.quantity > 0 &&
-                        <Button type="submit" variant={'dark'}
+                        <Button className={'mt-4 mb-4'} type="submit" variant={'dark'}
                                 disabled={this.state.isLoading || !this.state.selectedDesign}>
                             Add Operator Operations
                         </Button>
