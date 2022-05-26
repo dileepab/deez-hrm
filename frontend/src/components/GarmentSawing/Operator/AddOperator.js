@@ -12,9 +12,16 @@ export default class AddOperator extends React.Component {
         this.state = {
             form: {
                 name: '',
+                fullName: '',
                 team: '1',
                 type: '1',
                 isQC: false,
+                nationalId: '',
+                bankAccount: '',
+                bank: '',
+                distance: '',
+                startDate: new Date(),
+                resignDate: '',
             },
             validated: false,
             isLoading: false
@@ -40,7 +47,15 @@ export default class AddOperator extends React.Component {
                             isLoading: false,
                             form: {
                                 ...this.state.form,
-                                name: ""
+                                name: '',
+                                fullName: '',
+                                team: '1',
+                                type: '1',
+                                isQC: false,
+                                nationalId: '',
+                                bankAccount: '',
+                                bank: '',
+                                distance: '',
                             }
                         });
                         this.notifySuccess(`Operator "${data.name}" added successfully`);
@@ -78,7 +93,7 @@ export default class AddOperator extends React.Component {
                 <h2>Add Operator</h2>
                 <br/>
                 <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
-                    <Form.Group as={Row} id="name">
+                    <Form.Group as={Row} className="mb-3" id="name">
                         <Form.Label column sm="4">
                             Name
                         </Form.Label>
@@ -88,7 +103,17 @@ export default class AddOperator extends React.Component {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} id="team">
+                    <Form.Group as={Row} className="mb-3" id="fullName">
+                        <Form.Label column sm="4">
+                            Full Name (with initials)
+                        </Form.Label>
+                        <Col sm="8">
+                            <Form.Control type="text" name={'fullName'} value={this.state.form.fullName}
+                                          onChange={this.handleInputChange} required/>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} className="mb-3" id="team">
                         <Form.Label column sm="4">
                             Team
                         </Form.Label>
@@ -102,7 +127,7 @@ export default class AddOperator extends React.Component {
                         </Col>
                     </Form.Group>
 
-                    <Form.Group as={Row} id="type">
+                    <Form.Group as={Row} className="mb-3" id="type">
                         <Form.Label column sm="4">Select Operator Type</Form.Label>
                         <Col sm="8">
                             <Form.Control as="select" name={'type'} defaultValue={this.state.form.type}
@@ -122,7 +147,40 @@ export default class AddOperator extends React.Component {
                         </Col>
                     </Form.Group>
                     }
-                    <Button type="submit" disabled={this.state.isLoading}
+
+                    <Form.Group as={Row} className="mb-3" id="nationalId">
+                        <Form.Label column sm="4">National Id</Form.Label>
+                        <Col sm="8">
+                            <Form.Control type="text" name={'nationalId'} value={this.state.form.nationalId}
+                                          onChange={this.handleInputChange} required/>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} className="mb-3" id="bank">
+                        <Form.Label column sm="4">Bank Name</Form.Label>
+                        <Col sm="8">
+                            <Form.Control type="text" name={'bank'} value={this.state.form.bank}
+                                          onChange={this.handleInputChange} required/>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} className="mb-3" id="bankAccount">
+                        <Form.Label column sm="4">Bank Account Number</Form.Label>
+                        <Col sm="8">
+                            <Form.Control type="text" name={'bankAccount'} value={this.state.form.bankAccount}
+                                          onChange={this.handleInputChange} required/>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} className="mb-3" id="distance">
+                        <Form.Label column sm="4">Distance (KM)</Form.Label>
+                        <Col sm="8">
+                            <Form.Control type="text" name={'distance'} value={this.state.form.distance}
+                                          onChange={this.handleInputChange} required/>
+                        </Col>
+                    </Form.Group>
+
+                    <Button type="submit" className="mt-3" disabled={this.state.isLoading}
                             variant={'dark'}>{this.state.isLoading ? 'Loading' : 'Add Operator'}</Button>
                 </Form>
 

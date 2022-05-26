@@ -7,9 +7,9 @@ import {faEdit, faInfo, faPrint, faUpload} from "@fortawesome/free-solid-svg-ico
 import lodash from "lodash";
 import {designService, operatorService} from "../../../services";
 import {trackPromise} from "react-promise-tracker";
+import logo from '../../../img/deez-logo.png'
+import {settingsService} from '../../../services/settings.service';
 
-
-const qcPrice = 10;
 export default class ViewOperator extends React.Component {
     constructor(props) {
         super(props);
@@ -29,12 +29,19 @@ export default class ViewOperator extends React.Component {
             modal: {
                 showInfoModal: false,
                 showSalaryModal: false,
+            },
+            settings: {
+                qcPrice: 0,
+                perKMPrice: 0,
+                maxTransportAmount: 0,
+                isTransportEnable: false,
             }
         };
     }
 
     componentDidMount() {
         this.fetchDesigns();
+        this.fetchSettings();
     }
 
     fetchDesigns = () => {
@@ -46,6 +53,21 @@ export default class ViewOperator extends React.Component {
                         designs: formattedData
                     });
                     this.fetchOperators();
+                },
+                error => {
+                    this.setState({msg: error});
+                    console.error('Error:', error);
+                }
+            ));
+    }
+
+    fetchSettings = () => {
+        trackPromise(
+            settingsService.getAll().then(
+                data => {
+                    this.setState({
+                        settings: data[0]
+                    });
                 },
                 error => {
                     this.setState({msg: error});
@@ -146,7 +168,6 @@ export default class ViewOperator extends React.Component {
                             operator.todayTime = todayTimeAndSalary.totalTime;
                             operator.todayCompleteCount = todayTimeAndSalary.totalCompleteCount;
 
-                            // let yesterdayTimeAndSalary = this.calculateDailySalary(operator, yesterday);
                             let yesterdayTimeAndSalary = this.calculateSalary(operator, yesterday, today);
                             operator.yesterdaySalary = yesterdayTimeAndSalary.totalSalary;
                             operator.yesterdayTime = yesterdayTimeAndSalary.totalTime;
@@ -167,6 +188,10 @@ export default class ViewOperator extends React.Component {
                             operator.lastMonthCompleteCount = lastMonthTimeAndSalary.totalCompleteCount;
                             operator.lastMonthCLCompleteCount = lastMonthTimeAndSalary.totalCLCompleteCount;
                             operator.lastMonthNLMCompleteCount = lastMonthTimeAndSalary.totalNLMCompleteCount;
+
+                            operator.thisMonthWRKDays = this.calculateWorkDays(operator, thisMonthStartDate, tomorrow);
+                            operator.lastMonthWRKDays = this.calculateWorkDays(operator, lastMonthStartDate, thisMonthStartDate);
+                            operator.extraPayments = [];
                             return operator;
                         })
                         const percentage = this.calculatePercentage(data);
@@ -271,7 +296,23 @@ export default class ViewOperator extends React.Component {
     }
 
     salaryFormatter(salary) {
-        return 'Rs. ' + (salary ? salary.toFixed(2) : 0);
+        return (
+          <span className={'salary-format'}>Rs. <span>{salary ? salary.toFixed(2) : 0}</span></span>
+        );
+    }
+
+    calculateWorkDays(operator, start, end) {
+        let monthOperatorSteps = []
+        operator.operatorSteps && operator.operatorSteps.map((operatorStep, ind) => {
+            if (new Date(start) > new Date(operatorStep.completeTime) || new Date(operatorStep.completeTime) > new Date(end)) {
+              return operatorStep;
+            }
+            return monthOperatorSteps.push(operatorStep);
+        });
+        let monthWRKDays = lodash.groupBy(monthOperatorSteps, function(b) {
+            return moment(b.completeTime).format('YYYY-MM-DD');
+        });
+        return Object.keys(monthWRKDays).length;
     }
 
     calculateSalary(operator, start, end) {
@@ -315,6 +356,28 @@ export default class ViewOperator extends React.Component {
             return operatorStep;
         })
         return `${this.salaryFormatter(totalSalary)} - ${moment.duration(totalTime, 'seconds').format("hh [hr] mm [min]")} ~ ${parseInt(totalCompleteCount)} Dresses`;
+    }
+
+    calculateTransport(operator) {
+        let transport = 0;
+        transport = operator.distance * operator.lastMonthWRKDays * this.state.settings.perKMPrice * 2;
+        return this.state.settings.maxTransportAmount > transport ? transport : this.state.settings.maxTransportAmount;
+    }
+
+    calculateExtraPayments(operator) {
+        let extraPaymentTotal = 0;
+        operator.extraPayments.map((extraPayment) => {
+            return extraPaymentTotal += extraPayment.val;
+        })
+        return extraPaymentTotal;
+    }
+
+    calculateTotalSalary(operator) {
+        let totalSalary = operator.lastMonthSalary + operator.lastMonthBonus + this.calculateExtraPayments(operator);
+        if(this.state.settings.isTransportEnable){
+            totalSalary += this.calculateTransport(operator);
+        }
+        return this.salaryFormatter(totalSalary);
     }
 
     addOperatorInfo(operators) {
@@ -853,19 +916,19 @@ export default class ViewOperator extends React.Component {
                                     }
                                     if (operator.type === '1') {
                                         return (
-                                            <div key={ind} className={'salary-table w-100 mb-5'}>
+                                            <div key={ind} className={'salary-table w-50 mb-5'}>
                                                 <Table borderless>
                                                     <colgroup>
                                                         <col/>
                                                         <col/>
-                                                        <col width={200}/>
+                                                        <col/>
                                                     </colgroup>
                                                     <tbody>
                                                     <tr>
                                                         <td colSpan={3} className={'text-center'}>
                                                             <div className={'flex-column align-items-center'}>
                                                                 <div><img alt={'logo'} className={'logo-salary-print'}
-                                                                          src={'logo.png'}/></div>
+                                                                          src={logo}/></div>
                                                                 <br/>
                                                                 <div><small>Garment</small></div>
                                                                 <div><small>Temple Road, Bingiriya</small></div>
@@ -898,7 +961,7 @@ export default class ViewOperator extends React.Component {
                                                     <tr>
                                                         <td>Salary</td>
                                                         <td></td>
-                                                        <td className={'text-right'}>{this.salaryFormatter(operator.lastMonthSalary)}</td>
+                                                        <td>{this.salaryFormatter(operator.lastMonthSalary)}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>Operator Of Month</td>
@@ -912,11 +975,96 @@ export default class ViewOperator extends React.Component {
                                                         <td></td>
                                                         <td className={'text-right'}>{this.salaryFormatter(operator.lastMonthBonus)}</td>
                                                     </tr>
+                                                    {this.state.settings.isTransportEnable &&
+                                                    <tr>
+                                                        <td>Transport</td>
+                                                        <td>
+                                                            <div>Work Days: <input style={{width: '50px'}}
+                                                                                   className={'small border-0'}
+                                                                                   defaultValue={operator.lastMonthWRKDays}
+                                                                                   onChange={(e) => {
+                                                                                       operator.lastMonthWRKDays = parseInt(e.target.value);
+                                                                                       let operators = this.state.operators;
+                                                                                       operators[ind] = operator;
+                                                                                       this.setState({
+                                                                                           operators,
+                                                                                       });
+                                                                                   }} />
+                                                            </div>
+                                                            <div>
+                                                                Distance (KM) : {operator.distance}
+                                                            </div>
+                                                        </td>
+                                                        <td
+                                                          className={'text-right'}>{this.salaryFormatter(this.calculateTransport(operator))}</td>
+                                                    </tr>
+                                                    }
+                                                    <tr className={'non-printable'}>
+                                                        <td colSpan={3}>
+                                                            <Button onClick={(e) => {
+                                                                let op = operator;
+                                                                op.extraPayments.push({
+                                                                    label: '',
+                                                                    val: 0
+                                                                });
+                                                                let operators = this.state.operators;
+                                                                operators[ind] = op;
+                                                                this.setState({
+                                                                    operators
+                                                                })
+                                                            }} variant='primary'>Add Extra</Button>
+                                                        </td>
+                                                    </tr>
+                                                    {operator.extraPayments.map((payment, i)=>{
+                                                        return (
+                                                          <>
+                                                          <tr className='non-printable'>
+                                                              <td>
+                                                                  <Button size={'sm'} variant='danger'> - </Button>
+                                                              </td>
+                                                              <td className='vertical_align_middle'>
+                                                                  <input className={'small border-0 border-bottom'}
+                                                                         defaultValue={payment.label}
+                                                                         onChange={(e) => {
+                                                                             payment.label = e.target.value;
+                                                                             let op = operator;
+                                                                             op.extraPayments[i] = payment;
+                                                                             let operators = this.state.operators;
+                                                                             operators[ind] = op;
+                                                                             this.setState({
+                                                                                 operators
+                                                                             })
+                                                                         }}/>
+                                                              </td>
+                                                              <td className='vertical_align_middle'> Rs.
+                                                                  <input className={'small border-0 border-bottom'}
+                                                                         defaultValue={payment.val}
+                                                                         onChange={(e) => {
+                                                                             payment.val = parseInt(e.target.value);
+                                                                             let op = operator;
+                                                                             op.extraPayments[i] = payment;
+                                                                             let operators = this.state.operators;
+                                                                             operators[ind] = op;
+                                                                             this.setState({
+                                                                                 operators
+                                                                             })
+                                                                         }}/>
+                                                              </td>
+                                                          </tr>
+                                                          <tr className='d-none printable-row'>
+                                                              <td className='vertical_align_middle'>{payment.label}</td>
+                                                              <td></td>
+                                                              <td className='vertical_align_middle'>{this.salaryFormatter(payment.val)}</td>
+                                                          </tr>
+                                                          </>
+                                                        )
+                                                    })}
                                                     <tr className={'border-top'}>
                                                         <td>Total Salary</td>
                                                         <td></td>
                                                         <td className={'text-right border-bottom'}>
-                                                            <strong>{this.salaryFormatter(operator.lastMonthSalary + operator.lastMonthBonus)}</strong>
+                                                            <strong>{this.calculateTotalSalary(operator)}</strong>
+                                                            <strong>{this.salaryFormatter(operator.lastMonthSalary + operator.lastMonthBonus + this.calculateTransport(operator) + this.calculateExtraPayments(operator))}</strong>
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -979,7 +1127,7 @@ export default class ViewOperator extends React.Component {
                                                         <tr>
                                                             <td>Salary (QC)</td>
                                                             <td></td>
-                                                            <td className={'text-right'}>{this.salaryFormatter(this.state.lastMonthCompletedCount * qcPrice)}</td>
+                                                            <td className={'text-right'}>{this.salaryFormatter(this.state.lastMonthCompletedCount * this.state.settings.qcPrice)}</td>
                                                         </tr>
                                                     </React.Fragment>
                                                     }
@@ -987,7 +1135,7 @@ export default class ViewOperator extends React.Component {
                                                         <td>Total Salary</td>
                                                         <td></td>
                                                         <td className={'text-right border-bottom'}>
-                                                            <strong>{this.salaryFormatter(operator.lastMonthSalary + (operator.isQC ? this.state.lastMonthCompletedCount * qcPrice : 0))}</strong>
+                                                            <strong>{this.salaryFormatter(operator.lastMonthSalary + (operator.isQC ? this.state.lastMonthCompletedCount * this.state.settings.qcPrice : 0))}</strong>
                                                         </td>
                                                     </tr>
                                                     </tbody>
