@@ -141,9 +141,11 @@ export default class ViewDesign extends React.Component {
             designService.addDesign({
                 "name": selectedDesign.name,
                 "description": selectedDesign.description,
+                "brand": selectedDesign.brand,
                 "quantity": 0,
                 "sewingValue": selectedDesign.sewingValue,
                 "startTime": new Date(),
+                "type": selectedDesign.type,
                 "isComplete": false
             })
                 .then(

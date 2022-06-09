@@ -4,3 +4,4 @@ export * from './operator-step.repository';
 export * from './step.repository';
 export * from './user.repository';
 export * from './user-credentials.repository';
+export * from './settings.repository';

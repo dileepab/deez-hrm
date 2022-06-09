@@ -5,3 +5,4 @@ export * from './step.model';
 export * from './operator.model';
 export * from './operator-step.model';
 export * from './team.model';
+export * from './settings.model';

@@ -6,3 +6,4 @@ export * from './user.controller';
 export * from './design-step.controller';
 export * from './operator-operator-step.controller';
 export * from './step-operator-step.controller';
+export * from './settings.controller';

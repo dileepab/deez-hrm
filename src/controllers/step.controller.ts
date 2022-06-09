@@ -47,6 +47,33 @@ export class StepController {
     return this.stepRepository.create(step);
   }
 
+  @post('/steps-multi')
+  @response(200, {
+    description: 'Step model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Step)}},
+  })
+  async createAll(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'array',
+            items: getModelSchemaRef(Step, {
+              title: 'NewStep',
+              exclude: ['id'],
+            }),
+          }
+        },
+      },
+    })
+      steps: [Omit<Step, 'id'>],
+  ): Promise<{}> {
+    console.log(steps);
+    steps.forEach(item => this.stepRepository.create(item))
+    // return await this.stepRepository.createAll(steps);
+    return steps;
+  }
+
   @get('/steps/count')
   @response(200, {
     description: 'Step model count',

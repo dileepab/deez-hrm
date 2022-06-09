@@ -6,6 +6,7 @@ import lodash from "lodash"
 import {authenticationService, operatorService} from "../../../services";
 import {toast} from "react-toastify";
 import {trackPromise} from "react-promise-tracker";
+import DatePicker from 'react-date-picker';
 
 
 export default class EditOperator extends React.Component {
@@ -79,7 +80,7 @@ export default class EditOperator extends React.Component {
 
     confirmEdit = () => {
         this.setState({isLoading: true});
-        let data = lodash.cloneDeep(this.state.selectedOperator);
+        let data = lodash.cloneDeep(Object.fromEntries(Object.entries(this.state.selectedOperator).filter(([_, v]) => v != null)));
         delete data.ind;
         trackPromise(
             operatorService.editOperator(this.state.selectedOperator.id, data)
@@ -149,6 +150,17 @@ export default class EditOperator extends React.Component {
         });
     }
 
+    handleDateChange = (event) => {
+        const name = 'resignDate';
+
+        this.setState({
+            selectedOperator: {
+                ...this.state.selectedOperator,
+                [name]: event
+            }
+        });
+    }
+
 
     render() {
         return (
@@ -179,12 +191,12 @@ export default class EditOperator extends React.Component {
                                         </Button>
                                         &nbsp;
 
-                                        {this.state.currentUser && this.state.currentUser.roles.includes('admin') &&
-                                        <Button variant={"danger"} onClick={() => this.removeOperator(operator.id, ind)}
-                                                size={"sm"}>
-                                            <FontAwesomeIcon icon={faTrash}/>
-                                        </Button>
-                                        }
+                                        {/*{this.state.currentUser && this.state.currentUser.roles.includes('admin') &&*/}
+                                        {/*<Button variant={"danger"} onClick={() => this.removeOperator(operator.id, ind)}*/}
+                                        {/*        size={"sm"}>*/}
+                                        {/*    <FontAwesomeIcon icon={faTrash}/>*/}
+                                        {/*</Button>*/}
+                                        {/*}*/}
                                     </td>
                                 </tr>
                             )
@@ -200,7 +212,7 @@ export default class EditOperator extends React.Component {
                     <Modal.Body>
                         <Container>
                             <Form noValidate validated={this.state.validated}>
-                                <Form.Group as={Row} id="name">
+                                <Form.Group as={Row} className="mb-3" id="name">
                                     <Form.Label column sm="4">
                                         Name
                                     </Form.Label>
@@ -211,7 +223,17 @@ export default class EditOperator extends React.Component {
                                     </Col>
                                 </Form.Group>
 
-                                <Form.Group as={Row} id="team">
+                                <Form.Group as={Row} className="mb-3" id="fullName">
+                                    <Form.Label column sm="4">
+                                        Full Name (with initials)
+                                    </Form.Label>
+                                    <Col sm="8">
+                                        <Form.Control type="text" name={'fullName'} value={this.state.selectedOperator.fullName}
+                                                      onChange={this.handleInputChange} required/>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group as={Row} className="mb-3" id="team">
                                     <Form.Label column sm="4">
                                         Team
                                     </Form.Label>
@@ -225,7 +247,8 @@ export default class EditOperator extends React.Component {
                                         </Form.Control>
                                     </Col>
                                 </Form.Group>
-                                <Form.Group as={Row} id="type">
+
+                                <Form.Group as={Row} className="mb-3" id="type">
                                     <Form.Label column sm="4">Select Operator Type</Form.Label>
                                     <Col sm="8">
                                         <Form.Control as="select" name={'type'}
@@ -236,8 +259,9 @@ export default class EditOperator extends React.Component {
                                         </Form.Control>
                                     </Col>
                                 </Form.Group>
+
                                 {this.state.selectedOperator.type === '2' &&
-                                <Form.Group as={Row} id="type">
+                                <Form.Group as={Row} className="mb-3" id="isQC">
                                     <Form.Label column sm="4">Is QC?</Form.Label>
                                     <Col sm="8">
                                         <Form.Check name={'isQC'} type="checkbox" label=""
@@ -246,6 +270,57 @@ export default class EditOperator extends React.Component {
                                     </Col>
                                 </Form.Group>
                                 }
+
+                                <Form.Group as={Row} className="mb-3" id="nationalId">
+                                    <Form.Label column sm="4">National Id</Form.Label>
+                                    <Col sm="8">
+                                        <Form.Control type="text" name={'nationalId'} value={this.state.selectedOperator.nationalId}
+                                                      onChange={this.handleInputChange} required/>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group as={Row} className="mb-3" id="bank">
+                                    <Form.Label column sm="4">Bank Name</Form.Label>
+                                    <Col sm="8">
+                                        <Form.Control type="text" name={'bank'} value={this.state.selectedOperator.bank}
+                                                      onChange={this.handleInputChange} required/>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group as={Row} className="mb-3" id="bankAccount">
+                                    <Form.Label column sm="4">Bank Account Number</Form.Label>
+                                    <Col sm="8">
+                                        <Form.Control type="text" name={'bankAccount'} value={this.state.selectedOperator.bankAccount}
+                                                      onChange={this.handleInputChange} required/>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group as={Row} className="mb-3" id="distance">
+                                    <Form.Label column sm="4">Distance (KM)</Form.Label>
+                                    <Col sm="8">
+                                        <Form.Control type="number" name={'distance'} value={this.state.selectedOperator.distance}
+                                                      onChange={this.handleInputChange} required/>
+                                    </Col>
+                                </Form.Group>
+
+                                <Form.Group as={Row} className="mb-3" id="isResigned">
+                                    <Form.Label column sm="4">Is Resigned?</Form.Label>
+                                    <Col sm="8">
+                                        <Form.Check name={'isResigned'} type="checkbox" label=""
+                                                    checked={this.state.selectedOperator.isResigned}
+                                                    onChange={this.handleInputChange}/>
+                                    </Col>
+                                </Form.Group>
+
+                                {this.state.selectedOperator.isResigned &&
+                                <Form.Group as={Row} className="mb-3" id="resignDate">
+                                    <Form.Label column sm="4">Resigned Date</Form.Label>
+                                    <Col sm="8">
+                                        <DatePicker name={'resignDate'} onChange={this.handleDateChange} value={this.state.selectedOperator.resignDate} />
+                                    </Col>
+                                </Form.Group>
+                                }
+
                             </Form>
                         </Container>
                     </Modal.Body>

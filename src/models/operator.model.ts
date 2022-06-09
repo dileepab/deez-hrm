@@ -15,6 +15,12 @@ export class Operator extends Entity {
   })
   name?: string;
 
+
+  @property({
+    type: 'string',
+  })
+  fullName?: string;
+
   @property({
     type: 'string',
   })
@@ -29,6 +35,41 @@ export class Operator extends Entity {
     type: 'boolean',
   })
   isQC?: boolean;
+
+  @property({
+    type: 'string',
+  })
+  nationalId?: string;
+
+  @property({
+    type: 'string',
+  })
+  bank?: string;
+
+  @property({
+    type: 'string',
+  })
+  bankAccount?: string;
+
+  @property({
+    type: 'string',
+  })
+  distance?: string;
+
+  @property({
+    type: 'Date',
+  })
+  startDate?: Date;
+
+  @property({
+    type: 'Date',
+  })
+  resignDate?: Date;
+
+  @property({
+    type: 'boolean',
+  })
+  isResigned?: boolean;
 
   @hasMany(() => OperatorStep)
   operatorSteps: OperatorStep[];

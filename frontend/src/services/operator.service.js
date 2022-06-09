@@ -21,6 +21,7 @@ function getOperatorWithOperations() {
     const requestOptions = { method: 'GET', headers: authHeader() };
     return fetch(`${apiUrl}/operators?filter=
   {
+    "where":{"isResigned": false},
     "include": [
       {
         "relation": "operatorSteps",

@@ -1,0 +1,42 @@
+{
+  "where": {
+    "isResigned": false
+  },
+  "include": [
+    {
+      "relation": "operatorSteps",
+      "scope": {
+        "where": {
+          "completeTime": {
+            "gte": [
+              "Sat, 30 Apr 2022 18:30:00 GMT"
+            ]
+          }
+        },
+        "order": [
+          "id desc"
+        ],
+        "fields": {
+          "id": "true",
+          "stepId": "true",
+          "operatorId": "true",
+          "completeTime": "true",
+          "quantity": "true"
+        },
+        "include": [
+          {
+            "relation": "step",
+            "scope": {
+              "fields": {
+                "id": "true",
+                "name": "true",
+                "estimatedTime": "true",
+                "designId": "true"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
