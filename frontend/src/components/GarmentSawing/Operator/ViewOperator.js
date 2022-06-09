@@ -951,7 +951,7 @@ export default class ViewOperator extends React.Component {
                           </tr>
                           <tr className={'border-top'}>
                             <td colSpan={3} className={'text-center'}>
-                              {operator.name} - <small>
+                              {operator.fullName || operator.name} - <small>
                               <Moment format={'MMMM YYYY'} subtract={{months: 1}}>
                                 {date}
                               </Moment>
