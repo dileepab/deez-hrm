@@ -97,7 +97,7 @@ export default class ViewDesign extends React.Component {
         this.setState({isLoading: true});
         trackPromise(
             designService.deleteDesign(this.state.selectedDesign.id).then(
-                data => {
+                () => {
                     let designs = this.state.designs;
                     let ind = designs.indexOf(this.state.selectedDesign);
                     designs.splice(ind, 1);
@@ -169,7 +169,7 @@ export default class ViewDesign extends React.Component {
         trackPromise(
             operationService.addAllOperations(steps)
                 .then(
-                    data => {
+                    () => {
                         this.setState({
                             isLoading: false,
                             form: {
@@ -215,7 +215,7 @@ export default class ViewDesign extends React.Component {
             return 0
         }
         let operationTimes = 0;
-        selectedDesign.steps.map((operation, ind) => {
+        selectedDesign.steps.map((operation) => {
             return operationTimes += operation.estimatedTime;
         });
         return Math.floor(operationTimes / 60) + ' Minutes  ' + operationTimes % 60 + ' Seconds';
@@ -227,9 +227,9 @@ export default class ViewDesign extends React.Component {
             return 0
         }
         let totalCompletedTime = 0;
-        selectedDesign.steps.map((operation, ind) => {
+        selectedDesign.steps.map((operation) => {
 
-            operation.operatorSteps && operation.operatorSteps.map((operatorStep, ind) => {
+            operation.operatorSteps && operation.operatorSteps.map((operatorStep) => {
                 return totalCompletedTime += operatorStep.quantity * operation.estimatedTime;
             });
             return 0
@@ -246,7 +246,7 @@ export default class ViewDesign extends React.Component {
             return 0
         }
         let operationTimes = 0;
-        selectedDesign.steps.map((operation, ind) => {
+        selectedDesign.steps.map((operation) => {
             return operationTimes += operation.estimatedTime;
         });
         selectedDesign.totalTimeToComplete = operationTimes * this.state.selectedDesign.quantity;
@@ -265,7 +265,7 @@ export default class ViewDesign extends React.Component {
             return 0
         }
         let completedCount = 0;
-        operatorSteps.map((operatorStep, ind) => {
+        operatorSteps.map((operatorStep) => {
             return completedCount += operatorStep.quantity;
         });
         return (completedCount < this.state.selectedDesign.quantity ?
@@ -389,7 +389,7 @@ export default class ViewDesign extends React.Component {
                             <div>
                                 <Form.Control defaultValue={''} className={'w-auto'} as="select" name={'type'} onChange={this.handleDesignTypeChange}>
                                     <option value="" disabled>Select Type</option>
-                                    <option value=""></option>
+                                    <option value=""/>
                                     <option value="1">Sawing</option>
                                     <option value="2">Helper</option>
                                 </Form.Control>
@@ -400,7 +400,7 @@ export default class ViewDesign extends React.Component {
                             <div>
                                 <Form.Control defaultValue={''} className={'w-auto'} as="select" name={'brand'} onChange={this.handleBrandChange} required>
                                     <option value="" disabled>Select Brand</option>
-                                    <option value=""></option>
+                                    <option value=""/>
                                     <option value="nolimit">Nolimit</option>
                                     <option value="cleopatra">Cleopatra</option>
                                     <option value="modabella">Moda Bella</option>
@@ -508,7 +508,7 @@ export default class ViewDesign extends React.Component {
                     </Modal.Header>
                     <Modal.Body>
                         <EditDesign design={this.state.selectedDesign} history={this.props.history}
-                                    editComplete={() => this.handleClose()}></EditDesign>
+                                    editComplete={() => this.handleClose()}/>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button disabled={this.state.isLoading} variant="secondary" onClick={this.handleClose}>
@@ -600,12 +600,66 @@ export default class ViewDesign extends React.Component {
                         <Modal.Title>{this.state.modal.title}</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Row className={"mb-3"}>
-                            <Col md={5}>
-                                {this.state.selectedDesign.name}
+                        <Row className={"mb-3 w-100"}>
+                            <Col md={12}>
+                                <Form.Group className={'mb-3'} as={Row} id="name">
+                                    <Form.Label column sm="2">
+                                        Name
+                                    </Form.Label>
+                                    <Col sm="10">
+                                        <Form.Control type="text" name={'description'} value={this.state.selectedDesign.name}
+                                                      onChange={
+                                                          (event) => {
+                                                              this.setState({
+                                                                  selectedDesign: {
+                                                                      ...this.state.selectedDesign,
+                                                                      name: event.target.value
+                                                                  }
+                                                              });
+                                                          }
+                                                      } required/>
+                                    </Col>
+                                </Form.Group>
                             </Col>
-                            <Col md={7}>
-                                {this.state.selectedDesign.description}
+                            <Col md={12}>
+                                <Form.Group className={'mb-3'} as={Row} id="description">
+                                    <Form.Label column sm="2">
+                                        Description
+                                    </Form.Label>
+                                    <Col sm="10">
+                                        <Form.Control type="text" name={'description'} value={this.state.selectedDesign.description}
+                                                      onChange={
+                                                          (event) => {
+                                                              this.setState({
+                                                                  selectedDesign: {
+                                                                      ...this.state.selectedDesign,
+                                                                      description: event.target.value
+                                                                  }
+                                                              });
+                                                          }
+                                                      } required/>
+                                    </Col>
+                                </Form.Group>
+                            </Col>
+                            <Col md={12}>
+                                <Form.Group className={'mb-3'} as={Row} id="quantity">
+                                    <Form.Label column sm="2">
+                                        Quantity
+                                    </Form.Label>
+                                    <Col sm="10">
+                                        <Form.Control type="text" name={'quantity'} value={this.state.selectedDesign.quantity}
+                                                      onChange={
+                                                          (event) => {
+                                                              this.setState({
+                                                                  selectedDesign: {
+                                                                      ...this.state.selectedDesign,
+                                                                      quantity: event.target.value
+                                                                  }
+                                                              });
+                                                          }
+                                                      } required/>
+                                    </Col>
+                                </Form.Group>
                             </Col>
                         </Row>
                         <Table striped bordered hover size="sm">

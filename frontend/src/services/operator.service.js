@@ -65,7 +65,7 @@ function getOperatorWithOperations() {
 
 function getOperators() {
     const requestOptions = { method: 'GET', headers: authHeader() };
-    return fetch(`${apiUrl}/operators`,
+    return fetch(`${apiUrl}/operators?filter={"where":{"isResigned": false}}`,
         requestOptions).then(handleResponse);
 }
 
