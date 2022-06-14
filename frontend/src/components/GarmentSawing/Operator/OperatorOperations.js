@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Col, Container, Form, Row} from 'react-bootstrap';
+import {Button, Container, Form, Row} from 'react-bootstrap';
 import lodash from 'lodash';
 import {operatorService} from '../../../services';
 import {toast} from 'react-toastify';
@@ -173,7 +173,7 @@ export default class OperatorOperations extends React.Component {
               <Form.Control as='select' onChange={(event) => {
                 this.setState({selectedOperator: this.state.operators[event.target.value]});
               }}>
-                <option></option>
+                <option/>
                 {this.state.operators.length > 0 && this.state.operators.map((operator, index) => (
                   <option value={index} key={index}>{operator.name}</option>
                 ))}
@@ -183,11 +183,12 @@ export default class OperatorOperations extends React.Component {
             <Form.Group className={'mt-3'} controlId='designs'>
               <Form.Label>Select Design</Form.Label>
               <Form.Control as='select' onChange={this.handleDesignChange}>
-                <option></option>
+                <option/>
                 {this.state.designs.length > 0 && this.state.designs.map((design, index) => {
                   if((design.type === 1 && this.state.selectedOperator.type === '1') || (design.type === 2 && this.state.selectedOperator.type === '2')) {
                     return <option value={index} key={index}>{design.name} ----- {design.description}</option>
                   }
+                  return null;
                 }
                 )}
               </Form.Control>
@@ -200,7 +201,7 @@ export default class OperatorOperations extends React.Component {
                 console.log(event.target.value);
                 this.setState({selectedOperation: this.state.operations[event.target.value]});
               }}>
-                <option></option>
+                <option/>
                 {this.state.operations.length > 0 && this.state.operations.map((operation, index) => (
                   <option value={index} key={index}>{operation.name}</option>
                 ))}
