@@ -1,7 +1,9 @@
 {
   "where": {
-    "isResigned": false
+    "isResigned": false,
+    "_or": [{"type": "1"}]
   },
+  "type": {"_in": ["1","2"]},
   "include": [
     {
       "relation": "operatorSteps",

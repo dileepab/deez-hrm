@@ -16,17 +16,14 @@ export default class ViewOperator extends React.Component {
     this.state = {
       operators: [],
       helpersCount: 0,
+      cutterCount: 0,
       designs: [],
       view: 'monthly',
       operatorType: 'operator',
       days: [],
       selectedOperator: {},
-      thisMonthCompletedCount: 0,
-      thisMonthCLCompletedCount: 0,
-      thisMonthNLMCompletedCount: 0,
-      lastMonthCompletedCount: 0,
-      lastMonthCLCompletedCount: 0,
-      lastMonthNLMCompletedCount: 0,
+      thisMonthCompletedCount: {},
+      lastMonthCompletedCount: {},
       modal: {
         showInfoModal: false,
         showSalaryModal: false,
@@ -81,76 +78,61 @@ export default class ViewOperator extends React.Component {
     let date = new Date();
     let thisMonthStartDate = new Date(date.getFullYear(), date.getMonth(), 1, 0, 0, 0);
     let lastMonthStartDate = new Date(date.getFullYear(), date.getMonth() - 1, 1, 0, 0, 0);
-    let thisMonthCompletedCount = 0;
-    let thisMonthCLCompletedCount = 0;
-    let thisMonthNLMCompletedCount = 0;
-    let lastMonthCompletedCount = 0;
-    let lastMonthCLCompletedCount = 0;
-    let lastMonthNLMCompletedCount = 0;
+    let thisMonthCompletedCount = {};
+    let lastMonthCompletedCount = {};
+    this.createBrandObject(thisMonthCompletedCount);
+    this.createBrandObject(lastMonthCompletedCount);
     data.map((selectedDesign, i) => {
-      let operationTimes = 0;
-      let operationTimesCL = 0;
-      let operationTimesNLM = 0;
-      let thisMonthCompletedTime = 0;
-      let thisMonthCLCompletedTime = 0;
-      let thisMonthNLMCompletedTime = 0;
-      let lastMonthCompletedTime = 0;
-      let lastMonthCLCompletedTime = 0;
-      let lastMonthNLMCompletedTime = 0;
+      let operationTimes = {};
+      let thisMonthCompletedTime = {};
+      let lastMonthCompletedTime = {};
+      this.createBrandObject(operationTimes);
+      this.createBrandObject(thisMonthCompletedTime);
+      this.createBrandObject(lastMonthCompletedTime);
       selectedDesign.steps && selectedDesign.steps.map((operation, ind) => {
-        operationTimes += operation.estimatedTime;
-        if (selectedDesign.brand === 'cleopatra') {
-          operationTimesCL += operation.estimatedTime;
-        }
-        if (selectedDesign.brand === 'nolimit') {
-          operationTimesNLM += operation.estimatedTime;
-        }
+        operationTimes['total'] += operation.estimatedTime;
+        operationTimes[selectedDesign.brand] += operation.estimatedTime;
         if (selectedDesign.type === 2) {
           return false;
         }
         operation.operatorSteps && operation.operatorSteps.map((operatorStep, ind) => {
           if (new Date(operatorStep.completeTime) > new Date(thisMonthStartDate)) {
-            thisMonthCompletedTime += operation.estimatedTime * operatorStep.quantity;
-            if (selectedDesign.brand === 'cleopatra') {
-              thisMonthCLCompletedTime += operation.estimatedTime * operatorStep.quantity;
-            }
-            if (selectedDesign.brand === 'nolimit') {
-              thisMonthNLMCompletedTime += operation.estimatedTime * operatorStep.quantity;
-            }
+            thisMonthCompletedTime['total'] += operation.estimatedTime * operatorStep.quantity;
+            thisMonthCompletedTime[selectedDesign.brand] += operation.estimatedTime * operatorStep.quantity;
           } else if (new Date(operatorStep.completeTime) > new Date(lastMonthStartDate)) {
-            lastMonthCompletedTime += operation.estimatedTime * operatorStep.quantity;
-            if (selectedDesign.brand === 'cleopatra') {
-              lastMonthCLCompletedTime += operation.estimatedTime * operatorStep.quantity;
-            }
-            if (selectedDesign.brand === 'nolimit') {
-              lastMonthNLMCompletedTime += operation.estimatedTime * operatorStep.quantity;
-            }
+            lastMonthCompletedTime['total'] += operation.estimatedTime * operatorStep.quantity;
+            lastMonthCompletedTime[selectedDesign.brand] += operation.estimatedTime * operatorStep.quantity;
           }
           return operatorStep;
         });
         return operationTimes;
       });
-      thisMonthCompletedCount += thisMonthCompletedTime / operationTimes || 0;
-      thisMonthCLCompletedCount += thisMonthCLCompletedTime / operationTimesCL || 0;
-      thisMonthNLMCompletedCount += thisMonthNLMCompletedTime / operationTimesNLM || 0;
-      lastMonthCompletedCount += lastMonthCompletedTime / operationTimes || 0;
-      lastMonthCLCompletedCount += lastMonthCLCompletedTime / operationTimesCL || 0;
-      lastMonthNLMCompletedCount += lastMonthNLMCompletedTime / operationTimesNLM || 0;
-      selectedDesign.totalTime = operationTimes;
-      selectedDesign.sewingValueForSecond = (selectedDesign.sewingValue ? selectedDesign.sewingValue : 0) / operationTimes;
+      //this month
+      thisMonthCompletedCount['total'] += thisMonthCompletedTime['total'] / operationTimes['total'] || 0;
+      lastMonthCompletedCount['total'] += lastMonthCompletedTime['total'] / operationTimes['total'] || 0;
+      this.state.settings.brands.forEach((item)=>{
+        thisMonthCompletedCount[item] += thisMonthCompletedTime[item] / operationTimes[item] || 0;
+        lastMonthCompletedCount[item] += lastMonthCompletedTime[item] / operationTimes[item] || 0;
+      })
+
+      selectedDesign.totalTime = operationTimes['total'];
+      selectedDesign.sewingValueForSecond = (selectedDesign.sewingValue ? selectedDesign.sewingValue : 0) / operationTimes['total'];
       return selectedDesign;
     });
     console.log(thisMonthCompletedCount, lastMonthCompletedCount);
     this.setState({
-      thisMonthCompletedCount: parseInt(thisMonthCompletedCount),
-      thisMonthCLCompletedCount: parseInt(thisMonthCLCompletedCount),
-      thisMonthNLMCompletedCount: parseInt(thisMonthNLMCompletedCount),
-      lastMonthCompletedCount: parseInt(lastMonthCompletedCount),
-      lastMonthCLCompletedCount: parseInt(lastMonthCLCompletedCount),
-      lastMonthNLMCompletedCount: parseInt(lastMonthNLMCompletedCount),
+      thisMonthCompletedCount: thisMonthCompletedCount,
+      lastMonthCompletedCount: lastMonthCompletedCount,
     });
     return data;
   };
+
+  createBrandObject = (obj) => {
+    obj['total'] = 0;
+    this.state.settings.brands.forEach((item)=>{
+      obj[item] = 0;
+    })
+  }
 
   fetchOperators = () => {
     trackPromise(
@@ -164,36 +146,42 @@ export default class ViewOperator extends React.Component {
             let thisMonthStartDate = moment(new Date()).subtract(1, 'months').endOf('month');
             let lastMonthStartDate = moment(new Date()).subtract(2, 'months').endOf('month');
             let helpersCount = 0;
+            let cutterCount = 0;
             data.map((operator, ind) => {
-              if(operator.type === 2){
+              if(operator.type === "2"){
                 helpersCount++;
+              }
+              if(operator.type === "3"){
+                cutterCount++;
               }
               let todayTimeAndSalary = this.calculateSalary(operator, today, tomorrow);
               operator.todaySalary = todayTimeAndSalary.totalSalary;
               operator.todayTime = todayTimeAndSalary.totalTime;
-              operator.todayCompleteCount = todayTimeAndSalary.totalCompleteCount;
+              operator.todayCompleteCount = todayTimeAndSalary.totalCompleteCount['total'];
 
               let yesterdayTimeAndSalary = this.calculateSalary(operator, yesterday, today);
               operator.yesterdaySalary = yesterdayTimeAndSalary.totalSalary;
               operator.yesterdayTime = yesterdayTimeAndSalary.totalTime;
-              operator.yesterdayCompleteCount = yesterdayTimeAndSalary.totalCompleteCount;
-              operator.yesterdayCLCompleteCount = yesterdayTimeAndSalary.totalCLCompleteCount;
-              operator.yesterdayNLMCompleteCount = yesterdayTimeAndSalary.totalNLMCompleteCount;
+              operator.yesterdayCompleteCount = yesterdayTimeAndSalary.totalCompleteCount['total'];
+              operator.yesterdayCLCompleteCount = yesterdayTimeAndSalary.totalCompleteCount['cleopatra'];
+              operator.yesterdayNLMCompleteCount = yesterdayTimeAndSalary.totalCompleteCount['nolimit'];
+              operator.yesterdayMBCompleteCount = yesterdayTimeAndSalary.totalCompleteCount['modabella'];
 
               let thisMonthTimeAndSalary = this.calculateSalary(operator, thisMonthStartDate, tomorrow);
               operator.thisMonthTime = thisMonthTimeAndSalary.totalTime;
               operator.thisMonthSalary = thisMonthTimeAndSalary.totalSalary;
-              operator.thisMonthCompleteCount = thisMonthTimeAndSalary.totalCompleteCount;
-              operator.thisMonthCLCompleteCount = thisMonthTimeAndSalary.totalCLCompleteCount;
-              operator.thisMonthNLMCompleteCount = thisMonthTimeAndSalary.totalNLMCompleteCount;
+              operator.thisMonthCompleteCount = thisMonthTimeAndSalary.totalCompleteCount['total'];
+              operator.thisMonthCLCompleteCount = thisMonthTimeAndSalary.totalCompleteCount['cleopatra'];
+              operator.thisMonthNLMCompleteCount = thisMonthTimeAndSalary.totalCompleteCount['nolimit'];
+              operator.thisMonthMBCompleteCount = thisMonthTimeAndSalary.totalCompleteCount['modabella'];
 
               let lastMonthTimeAndSalary = this.calculateSalary(operator, lastMonthStartDate, thisMonthStartDate);
               operator.lastMonthTime = lastMonthTimeAndSalary.totalTime;
               operator.lastMonthSalary = lastMonthTimeAndSalary.totalSalary;
-              operator.lastMonthCompleteCount = lastMonthTimeAndSalary.totalCompleteCount;
-              operator.lastMonthCLCompleteCount = lastMonthTimeAndSalary.totalCLCompleteCount;
-              operator.lastMonthNLMCompleteCount = lastMonthTimeAndSalary.totalNLMCompleteCount;
-              operator.lastMonthMBCompleteCount = lastMonthTimeAndSalary.totalMBCompleteCount;
+              operator.lastMonthCompleteCount = lastMonthTimeAndSalary.totalCompleteCount['total'];
+              operator.lastMonthCLCompleteCount = lastMonthTimeAndSalary.totalCompleteCount['cleopatra'];
+              operator.lastMonthNLMCompleteCount = lastMonthTimeAndSalary.totalCompleteCount['nolimit'];
+              operator.lastMonthMBCompleteCount = lastMonthTimeAndSalary.totalCompleteCount['modabella'];
 
               operator.thisMonthWRKDays = this.calculateWorkDays(operator, thisMonthStartDate, tomorrow);
               operator.lastMonthWRKDays = this.calculateWorkDays(operator, lastMonthStartDate, thisMonthStartDate);
@@ -213,6 +201,7 @@ export default class ViewOperator extends React.Component {
             this.setState({
               operators: data,
               helpersCount: helpersCount,
+              cutterCount: cutterCount
             });
           },
           error => {
@@ -326,10 +315,11 @@ export default class ViewOperator extends React.Component {
 
   calculateSalary(operator, start, end) {
     let totalTime = 0;
-    let totalCompleteCount = 0;
-    let totalCLCompleteCount = 0;
-    let totalNLMCompleteCount = 0;
-    let totalMBCompleteCount = 0;
+    let totalCompleteCount = {};
+    this.createBrandObject(totalCompleteCount)
+    // let totalCLCompleteCount = 0;
+    // let totalNLMCompleteCount = 0;
+    // let totalMBCompleteCount = 0;
     let totalSalary = 0;
     operator.operatorSteps && operator.operatorSteps.map((operatorStep, ind) => {
       if (new Date(start) > new Date(operatorStep.completeTime) || new Date(operatorStep.completeTime) > new Date(end)) {
@@ -340,20 +330,13 @@ export default class ViewOperator extends React.Component {
         alert('Design with id - ' + operatorStep.step.designId + ' not found');
       }
       totalTime += operatorStep.step.estimatedTime * operatorStep.quantity;
-      totalCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
-      if (design.brand === 'cleopatra') {
-        totalCLCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
-      }
-      if (design.brand === 'nolimit') {
-        totalNLMCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
-      }
-      if (design.brand === 'modabella') {
-        totalMBCompleteCount += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
-      }
+      totalCompleteCount['total'] += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
+      totalCompleteCount[design.brand] += operatorStep.step.estimatedTime * operatorStep.quantity / design.totalTime;
+
       totalSalary += operatorStep.step.estimatedTime * operatorStep.quantity * design.sewingValueForSecond;
       return operatorStep;
     });
-    return {totalTime, totalSalary, totalCompleteCount, totalCLCompleteCount, totalNLMCompleteCount, totalMBCompleteCount};
+    return {totalTime, totalSalary, totalCompleteCount};
   }
 
   calculateDaily(operatorSteps) {
@@ -386,7 +369,20 @@ export default class ViewOperator extends React.Component {
   }
 
   calculateTotalSalary(operator) {
-    let totalSalary = operator.lastMonthSalary + operator.lastMonthBonus + this.calculateExtraPayments(operator);
+    let totalSalary = 0;
+    if(operator.type === "1" || operator.type === "2"){
+      totalSalary += operator.lastMonthSalary + operator.lastMonthBonus;
+    }
+    if(operator.type === "3"){
+      totalSalary = (this.state.lastMonthCompletedCount['nolimit'] * 20 + this.state.lastMonthCompletedCount['cleopatra'] * 50 + this.state.lastMonthCompletedCount['modabella'] * 100) / this.state.cutterCount;
+    }
+    if(operator.type === "4"){
+      totalSalary = this.state.settings.qcSalary;
+    }
+    if(operator.type === "5"){
+      totalSalary = this.state.lastMonthCompletedCount['total'] * 25;
+    }
+    totalSalary += this.calculateExtraPayments(operator)
     if (this.state.settings.isTransportEnable) {
       totalSalary += this.calculateTransport(operator);
     }
@@ -526,12 +522,14 @@ export default class ViewOperator extends React.Component {
                 <div>
                   <div className={'justify-content-end'}>This Month Completed Count</div>
                   <div className={'justify-content-end'}>Cleopatra</div>
+                  <div className={'justify-content-end'}>Modabella</div>
                   <div className={'justify-content-end'}>Nolimit</div>
                 </div>
                 <div>
-                  <div className={'justify-content-start'}> : {this.state.thisMonthCompletedCount}</div>
-                  <div className={'justify-content-start'}> : {this.state.thisMonthCLCompletedCount}</div>
-                  <div className={'justify-content-start'}> : {this.state.thisMonthNLMCompletedCount}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.thisMonthCompletedCount['total'])}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.thisMonthCompletedCount['cleopatra'])}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.thisMonthCompletedCount['modabella'])}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.thisMonthCompletedCount['nolimit'])}</div>
                 </div>
               </div>
             </div>
@@ -542,12 +540,14 @@ export default class ViewOperator extends React.Component {
                 <div>
                   <div className={'justify-content-end'}>Last Month Completed Count</div>
                   <div className={'justify-content-end'}>Cleopatra</div>
+                  <div className={'justify-content-end'}>Modabella</div>
                   <div className={'justify-content-end'}>Nolimit</div>
                 </div>
                 <div>
-                  <div className={'justify-content-start'}> : {this.state.lastMonthCompletedCount}</div>
-                  <div className={'justify-content-start'}> : {this.state.lastMonthCLCompletedCount}</div>
-                  <div className={'justify-content-start'}> : {this.state.lastMonthNLMCompletedCount}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.lastMonthCompletedCount['total'])}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.lastMonthCompletedCount['cleopatra'])}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.lastMonthCompletedCount['modabella'])}</div>
+                  <div className={'justify-content-start'}> : {parseInt(this.state.lastMonthCompletedCount['nolimit'])}</div>
                 </div>
               </div>
             </div>
@@ -752,18 +752,18 @@ export default class ViewOperator extends React.Component {
                 if (operator.type === '1') {
                   return false;
                 }
-                let isQC = operator.isQC;
+                let isQC = operator.type === '4';
                 return (
                   <tr key={ind}>
                     <td>{operator.name}</td>
                     <td className={'d-none d-md-table-cell'}>
                       <div>
-                        <strong>{this.salaryFormatter(operator.lastMonthSalary + (isQC ? this.state.lastMonthCompletedCount * 10 : 0))} </strong>
+                        <strong>{this.salaryFormatter(operator.lastMonthSalary + (isQC ? this.state.lastMonthCompletedCount['total'] * 10 : 0))} </strong>
                         <br />
                         ~ <small>{parseInt(operator.lastMonthCompleteCount)} Helper
                         Dresses </small>
                         {isQC &&
-                        <small> & {this.state.lastMonthCompletedCount} Checked Dresses</small>
+                        <small> & {this.state.lastMonthCompletedCount['totlal']} Checked Dresses</small>
                         }
                       </div>
                     </td>
@@ -1031,6 +1031,58 @@ export default class ViewOperator extends React.Component {
                               </tr>
                             </>
                           }
+                          {operator.type === '3' &&
+                            <>
+                              <tr className={'border-top'}>
+                                <td>Number of cut garments (NOLIMIT)</td>
+                                <td className={'text-right'}>
+                                  <small>{parseInt(this.state.lastMonthCompletedCount['nolimit']) /this.state.cutterCount}</small>
+                                </td>
+                                <td/>
+                              </tr>
+                              <tr>
+                                <td/>
+                                <td/>
+                                <td>{this.salaryFormatter(parseInt(this.state.lastMonthCompletedCount['nolimit']) /this.state.cutterCount * 20)}</td>
+                              </tr>
+                              <tr>
+                                <td>Number of cut garments (CLEOPATRA)</td>
+                                <td className={'text-right'}>
+                                  <small>{parseInt(this.state.lastMonthCompletedCount['cleopatra']) /this.state.cutterCount}</small>
+                                </td>
+                                <td/>
+                              </tr>
+                              <tr>
+                                <td/>
+                                <td/>
+                                <td>{this.salaryFormatter(parseInt(this.state.lastMonthCompletedCount['cleopatra']) /this.state.cutterCount * 50)}</td>
+                              </tr>
+                              <tr>
+                                <td>Number of cut garments (MODABELLA)</td>
+                                <td className={'text-right'}>
+                                  <small>{parseInt(this.state.lastMonthCompletedCount['modabella']) /this.state.cutterCount}</small>
+                                </td>
+                                <td/>
+                              </tr>
+                              <tr>
+                                <td/>
+                                <td/>
+                                <td>{this.salaryFormatter(parseInt(this.state.lastMonthCompletedCount['modabella']) /this.state.cutterCount * 100)}</td>
+                              </tr>
+                              <tr>
+                                <td>Number of cut garments (Total)</td>
+                                <td className={'text-right'}>
+                                  <small>{parseInt(this.state.lastMonthCompletedCount['total']) /this.state.cutterCount}</small>
+                                </td>
+                                <td/>
+                              </tr>
+                              <tr>
+                                <td/>
+                                <td/>
+                                <td>{this.calculateTotalSalary(operator)}</td>
+                              </tr>
+                            </>
+                          }
                           {this.state.settings.isTransportEnable &&
                           <tr>
                             <td>Transport</td>
@@ -1120,77 +1172,6 @@ export default class ViewOperator extends React.Component {
                             <td></td>
                             <td className={'text-right border-bottom'}>
                               <strong>{this.calculateTotalSalary(operator)}</strong>
-                            </td>
-                          </tr>
-                          </tbody>
-                        </Table>
-                      </div>
-                    );
-                  }
-                  if (operator.type === '2') {
-                    return (
-                      <div key={ind} className={'salary-table w-100 mb-5'}>
-                        <Table borderless>
-                          <colgroup>
-                            <col />
-                            <col />
-                            <col />
-                          </colgroup>
-                          <tbody>
-                          <tr>
-                            <td colSpan={3} className={'text-center'}>
-                              <div className={'flex-column align-items-center'}>
-                                <div><img alt={'logo'} className={'logo-salary-print'}
-                                          src={'logo.png'} /></div>
-                                <br />
-                                <div><small>Garment</small></div>
-                                <div><small>Temple Road, Bingiriya</small></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr className={'border-top'}>
-                            <td colSpan={3} className={'text-center'}>
-                              {operator.name} - <small>
-                              <Moment format={'MMMM YYYY'} subtract={{months: 1}}>
-                                {date}
-                              </Moment>
-                            </small>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td>Completed Dresses (Helper)</td>
-                            <td className={'text-right'}>
-                              <small>{parseInt(operator.lastMonthCompleteCount)/ this.state.helpersCount}</small>
-                            </td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <td>Salary (Helper)</td>
-                            <td></td>
-                            <td className={'text-right'}>{this.salaryFormatter(operator.lastMonthSalary)}</td>
-                          </tr>
-                          {operator.isQC &&
-                          <React.Fragment>
-                            <tr>
-                              <td>Completed Dresses (QC)</td>
-                              <td className={'text-right'}>
-                                <small>{parseInt(this.state.lastMonthCompletedCount)}</small>
-                              </td>
-                              <td></td>
-                            </tr>
-                            <tr>
-                              <td>Salary (QC)</td>
-                              <td></td>
-                              <td
-                                className={'text-right'}>{this.salaryFormatter(this.state.lastMonthCompletedCount * this.state.settings.qcPrice)}</td>
-                            </tr>
-                          </React.Fragment>
-                          }
-                          <tr className={'border-top'}>
-                            <td>Total Salary</td>
-                            <td></td>
-                            <td className={'text-right border-bottom'}>
-                              <strong>{this.salaryFormatter(operator.lastMonthSalary + (operator.isQC ? this.state.lastMonthCompletedCount * this.state.settings.qcPrice : 0))}</strong>
                             </td>
                           </tr>
                           </tbody>

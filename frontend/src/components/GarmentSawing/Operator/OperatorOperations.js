@@ -57,7 +57,7 @@ export default class OperatorOperations extends React.Component {
 
   fetchOperators() {
     trackPromise(
-      operatorService.getOperators()
+      operatorService.getMachineOperatorsAndHelpers()
         .then(
           data => {
             this.setState({

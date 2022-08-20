@@ -33,6 +33,18 @@ export class Settings extends Entity {
   })
   isTransportEnable: boolean;
 
+  @property({
+    type: 'number',
+    required: true,
+  })
+  qcSalary: number;
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+  })
+  brands?: string[];
+
 
   constructor(data?: Partial<Settings>) {
     super(data);

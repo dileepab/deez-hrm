@@ -4,6 +4,7 @@ import {apiUrl} from "../constants";
 export const operatorService = {
     getOperatorWithOperations,
     getOperators,
+    getMachineOperatorsAndHelpers,
     addOperator,
     editOperator,
     updateOperatorSteps,
@@ -65,7 +66,13 @@ function getOperatorWithOperations() {
 
 function getOperators() {
     const requestOptions = { method: 'GET', headers: authHeader() };
-    return fetch(`${apiUrl}/operators?filter={"where":{"isResigned": false}}`,
+    return fetch(`${apiUrl}/operators`,
+        requestOptions).then(handleResponse);
+}
+
+function getMachineOperatorsAndHelpers() {
+    const requestOptions = { method: 'GET', headers: authHeader() };
+    return fetch(`${apiUrl}/operators?filter={"where":{"isResigned": false, "type": {"nin": ["3","4","5"]}}}`,
         requestOptions).then(handleResponse);
 }
 

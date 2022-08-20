@@ -21,7 +21,8 @@ export default class AddOperator extends React.Component {
                 bank: '',
                 distance: '',
                 startDate: new Date(),
-                resignDate: '',
+                resignDate: new Date(),
+                isResigned: false,
             },
             validated: false,
             isLoading: false
@@ -134,6 +135,9 @@ export default class AddOperator extends React.Component {
                                           onChange={this.handleInputChange}>
                                 <option value="1">Machine Operator</option>
                                 <option value="2">Helper</option>
+                                <option value="3">Cutting</option>
+                                <option value="4">QC</option>
+                                <option value="5">Manager</option>
                             </Form.Control>
                         </Col>
                     </Form.Group>
